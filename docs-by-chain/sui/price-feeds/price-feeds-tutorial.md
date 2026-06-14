@@ -661,7 +661,7 @@ public struct MyProtocol has key {
 ### 4. TypeScript Dependencies
 
 ```bash
-npm install @switchboard-xyz/sui-sdk@0.1.14 @mysten/sui@1.38.0
+npm install @switchboard-xyz/sui-sdk@0.1.16 @mysten/sui@1.38.0
 ```
 
 ## Available Feeds

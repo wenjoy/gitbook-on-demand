@@ -553,7 +553,7 @@ cp -r sb-on-demand-examples/evm/price-feeds/src/switchboard your-project/src/
 Or install via npm:
 
 ```bash
-npm install @switchboard-xyz/on-demand-solidity
+npm install @switchboard-xyz/on-demand-solidity@1.1.0
 ```
 
 ### 2. Import and Use

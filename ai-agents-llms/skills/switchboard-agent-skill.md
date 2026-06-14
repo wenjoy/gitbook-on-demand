@@ -19,14 +19,14 @@ Provide a compact “front door” for all Switchboard work:
 
 Use exact pins from the [SDK Version Matrix](../../tooling/sdk-version-matrix.md).
 
-- `@switchboard-xyz/on-demand@3.9.0`
-- `@switchboard-xyz/common@5.7.0`
+- `@switchboard-xyz/on-demand@3.10.3`
+- `@switchboard-xyz/common@5.8.2`
 - `@switchboard-xyz/on-demand-solidity@1.1.0`
-- `@switchboard-xyz/sui-sdk@0.1.14`
+- `@switchboard-xyz/sui-sdk@0.1.16`
 - `@switchboard-xyz/aptos-sdk@0.1.5`
 - `@switchboard-xyz/iota-sdk@0.0.3`
-- `switchboard-on-demand = "0.11.3"`
-- `switchboard-protos = "0.2.4"`
+- `switchboard-on-demand = "0.13.0"`
+- `switchboard-protos = "0.2.6"`
 
 ## Scope
 

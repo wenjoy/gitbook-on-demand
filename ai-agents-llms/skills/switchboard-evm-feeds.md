@@ -21,9 +21,9 @@ Integrate Switchboard on-demand feeds into EVM contracts and bots:
 
 Use exact pins from the [SDK Version Matrix](../../tooling/sdk-version-matrix.md).
 
-- `@switchboard-xyz/common@5.7.0`
+- `@switchboard-xyz/common@5.8.2`
 - `@switchboard-xyz/on-demand-solidity@1.1.0`
-- `ethers@6.16.0`
+- `ethers@6.13.1`
 
 ## Preconditions
 

@@ -374,10 +374,10 @@ In your `Cargo.toml`:
 
 ```toml
 [dependencies]
-switchboard-on-demand = { version = "=0.10.3", features = ["anchor", "devnet"] }
+switchboard-on-demand = { version = "0.13.0", features = ["anchor", "devnet"] }
 ```
 
-The example program pins `=0.10.3` on devnet. If you are targeting a different Solana cluster, swap the cluster feature to match your deployment.
+The example program enables the `devnet` feature. If you are targeting a different Solana cluster, swap the cluster feature to match your deployment.
 
 ### 2. Add the Account Struct
 

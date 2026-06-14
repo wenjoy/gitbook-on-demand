@@ -59,9 +59,9 @@ Connect your wallet and subscribe at [explorer.switchboardlabs.xyz/subscriptions
 ### 2. Install the SDK
 
 ```bash
-npm install @switchboard-xyz/on-demand@3.9.0
+npm install @switchboard-xyz/on-demand@3.10.3
 # or
-yarn add @switchboard-xyz/on-demand@3.9.0
+yarn add @switchboard-xyz/on-demand@3.10.3
 ```
 
 ### 3. Connect and Stream
