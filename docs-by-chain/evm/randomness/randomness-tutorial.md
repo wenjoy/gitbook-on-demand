@@ -54,13 +54,13 @@ The two-stage flow maps directly to our two main functions:
 1. **Solidity SDK:**
 
 ```bash
-npm install @switchboard-xyz/on-demand-solidity
+npm install @switchboard-xyz/on-demand-solidity@1.1.0
 ```
 
 2. **TypeScript SDK** (for off-chain randomness resolution):
 
 ```bash
-npm install @switchboard-xyz/common ethers
+npm install @switchboard-xyz/common@5.8.2 ethers
 ```
 
 3. **Forge remappings** - Add to `remappings.txt`:

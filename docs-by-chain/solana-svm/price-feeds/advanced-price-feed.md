@@ -65,14 +65,22 @@ This allows conditional initialization only when needed.
 
 ### Program Structure
 
+Use the current Pinocchio and Switchboard dependencies:
+
+```toml
+[dependencies]
+switchboard-on-demand = { version = "0.13.0", features = ["pinocchio", "devnet"] }
+pinocchio = { version = "0.11.2", features = ["cpi"] }
+solana-msg = "2.2.1"
+```
+
 ```rust
-use pinocchio::{entrypoint, msg, ProgramResult};
+use pinocchio::{entrypoint, AccountView, Address, ProgramResult};
+use pinocchio::error::ProgramError;
+use solana_msg::msg;
 use switchboard_on_demand::{
-    QuoteVerifier, check_pubkey_eq, OracleQuote, Instructions, get_slot
+    check_pubkey_eq, get_slot, Instructions, OracleQuote, QuoteVerifier
 };
-use pinocchio::account_info::AccountInfo;
-use pinocchio::program_error::ProgramError;
-use pinocchio::pubkey::Pubkey;
 
 mod utils;
 use utils::{init_quote_account_if_needed, init_state_account_if_needed};
@@ -80,8 +88,8 @@ use utils::{init_quote_account_if_needed, init_state_account_if_needed};
 entrypoint!(process_instruction);
 
 pub fn process_instruction(
-    program_id: &Pubkey,
-    accounts: &[AccountInfo],
+    program_id: &Address,
+    accounts: &mut [AccountView],
     instruction_data: &[u8],
 ) -> ProgramResult {
     match instruction_data[0] {
@@ -102,8 +110,8 @@ The instruction discriminator is a single byte—no Anchor discriminator overhea
 The crank instruction writes oracle data for authorized signers:
 
 ```rust
-pub fn crank(program_id: &Pubkey, accounts: &[AccountInfo]) -> ProgramResult {
-    let [quote, queue, state, payer, instructions_sysvar, _clock_sysvar]: &[AccountInfo; 6] =
+pub fn crank(program_id: &Address, accounts: &mut [AccountView]) -> ProgramResult {
+    let [quote, queue, state, payer, instructions_sysvar, _clock_sysvar]: &mut [AccountView; 6] =
         accounts.try_into().map_err(|_| ProgramError::NotEnoughAccountKeys)?;
 
     // Validate state account belongs to this program
@@ -113,21 +121,21 @@ pub fn crank(program_id: &Pubkey, accounts: &[AccountInfo]) -> ProgramResult {
     }
 
     // Check payer matches authorized signer stored in state
-    let state_data = unsafe { state.borrow_data_unchecked() };
-    if !check_pubkey_eq(&state_data, payer.key()) {
+    let state_data = state.try_borrow()?;
+    if !check_pubkey_eq(&state_data[..32], payer.address()) {
         return Err(ProgramError::Custom(1)); // UnauthorizedSigner
     }
 
     // DANGER: Only use this if you trust the signer!
     // Bypasses cryptographic verification for speed
-    OracleQuote::write_from_ix_unchecked(instructions_sysvar, quote, queue.key(), 0);
+    OracleQuote::write_from_ix_unchecked(&*instructions_sysvar, quote, queue.address(), 0);
 
     Ok(())
 }
 ```
 
 **Key points:**
-- Uses `borrow_data_unchecked` for zero-copy state access
+- Uses `AccountView` accessors for low-overhead account reads and writes
 - `write_from_ix_unchecked` directly writes oracle data without Ed25519 verification
 - Only ~90 CU for the entire operation
 
@@ -136,20 +144,20 @@ pub fn crank(program_id: &Pubkey, accounts: &[AccountInfo]) -> ProgramResult {
 The read instruction verifies and displays oracle data:
 
 ```rust
-pub fn read(_program_id: &Pubkey, accounts: &[AccountInfo]) -> ProgramResult {
-    let [quote, queue, clock_sysvar, slothashes_sysvar, instructions_sysvar]: &[AccountInfo; 5] =
+pub fn read(_program_id: &Address, accounts: &mut [AccountView]) -> ProgramResult {
+    let [quote, queue, clock_sysvar, slothashes_sysvar, instructions_sysvar]: &mut [AccountView; 5] =
         accounts.try_into().map_err(|_| ProgramError::NotEnoughAccountKeys)?;
 
-    let slot = get_slot(clock_sysvar);
+    let slot = get_slot(&*clock_sysvar);
 
     // Verify the oracle data with staleness check
     let quote_data = QuoteVerifier::new()
-        .slothash_sysvar(slothashes_sysvar)
-        .ix_sysvar(instructions_sysvar)
+        .slothash_sysvar(&*slothashes_sysvar)
+        .ix_sysvar(&*instructions_sysvar)
         .clock_slot(slot)
-        .queue(queue)
+        .queue(&*queue)
         .max_age(30)  // Reject data older than 30 slots (~12 seconds)
-        .verify_account(quote)
+        .verify_account(queue.address(), quote)
         .unwrap();
 
     msg!("Quote slot: {}", quote_data.slot());
@@ -174,15 +182,15 @@ pub fn read(_program_id: &Pubkey, accounts: &[AccountInfo]) -> ProgramResult {
 Initializes the authorization state account:
 
 ```rust
-pub fn init_state(program_id: &Pubkey, accounts: &[AccountInfo]) -> ProgramResult {
-    let [state, payer, system_program]: &[AccountInfo; 3] =
+pub fn init_state(program_id: &Address, accounts: &mut [AccountView]) -> ProgramResult {
+    let [state, payer, system_program]: &mut [AccountView; 3] =
         accounts.try_into().map_err(|_| ProgramError::NotEnoughAccountKeys)?;
 
     // Create the state account PDA
     init_state_account_if_needed(program_id, state, payer, system_program)?;
 
     // Store the authorized signer (payer becomes the admin)
-    state.try_borrow_mut_data()?[..32].copy_from_slice(payer.key().as_ref());
+    state.try_borrow_mut()?[..32].copy_from_slice(payer.address().as_ref());
 
     Ok(())
 }
@@ -195,12 +203,12 @@ The state account stores a single 32-byte pubkey—the authorized cranker.
 Initializes the oracle quote account:
 
 ```rust
-pub fn init_oracle(program_id: &Pubkey, accounts: &[AccountInfo]) -> ProgramResult {
-    let [quote, queue, payer, system_program, instructions_sysvar]: &[AccountInfo; 5] =
+pub fn init_oracle(program_id: &Address, accounts: &mut [AccountView]) -> ProgramResult {
+    let [quote, queue, payer, system_program, instructions_sysvar]: &mut [AccountView; 5] =
         accounts.try_into().map_err(|_| ProgramError::NotEnoughAccountKeys)?;
 
     // Parse feed info from the Ed25519 instruction data
-    let quote_data = Instructions::parse_ix_data_unverified(instructions_sysvar, 0)
+    let quote_data = Instructions::parse_ix_data_unverified(&*instructions_sysvar, 0)
         .map_err(|_| ProgramError::InvalidInstructionData)?;
 
     // Create the quote account as a PDA derived from queue + feed IDs
@@ -227,11 +235,11 @@ The `utils.rs` module handles PDA derivation and account creation:
 pub const ORACLE_ACCOUNT_SIZE: usize = 8 + 32 + 1024; // discriminator + queue + data
 
 pub fn init_quote_account_if_needed(
-    program_id: &Pubkey,
-    oracle_account: &AccountInfo,
-    queue_account: &AccountInfo,
-    payer: &AccountInfo,
-    system_program: &AccountInfo,
+    program_id: &Address,
+    oracle_account: &mut AccountView,
+    queue_account: &mut AccountView,
+    payer: &mut AccountView,
+    system_program: &mut AccountView,
     oracle_quote: &OracleQuote,
 ) -> Result<(), ProgramError> {
     // Skip if already initialized
@@ -243,15 +251,14 @@ pub fn init_quote_account_if_needed(
     // Derive PDA from queue + feed IDs
     let feed_ids = oracle_quote.feed_ids();
     let mut seeds: Vec<&[u8]> = Vec::with_capacity(feed_ids.len() + 1);
-    seeds.push(queue_account.key().as_ref());
+    seeds.push(queue_account.address().as_ref());
     for feed_id in &feed_ids {
         seeds.push(feed_id.as_ref());
     }
 
-    let (canonical_address, bump) =
-        pinocchio::pubkey::find_program_address(&seeds, program_id);
+    let (canonical_address, bump) = Address::find_program_address(&seeds, program_id);
 
-    if canonical_address != *oracle_account.key() {
+    if canonical_address != *oracle_account.address() {
         return Err(ProgramError::InvalidArgument);
     }
 
@@ -266,20 +273,19 @@ pub fn init_quote_account_if_needed(
 pub const STATE_ACCOUNT_SIZE: usize = 32; // Single pubkey
 
 pub fn init_state_account_if_needed(
-    program_id: &Pubkey,
-    state_account: &AccountInfo,
-    payer: &AccountInfo,
-    system_program: &AccountInfo,
+    program_id: &Address,
+    state_account: &mut AccountView,
+    payer: &mut AccountView,
+    system_program: &mut AccountView,
 ) -> Result<(), ProgramError> {
     if state_account.lamports() != 0 {
         return Ok(());
     }
 
     // Derive PDA from "state" seed
-    let (expected_key, bump) =
-        pinocchio::pubkey::find_program_address(&[b"state"], program_id);
+    let (expected_key, bump) = Address::find_program_address(&[b"state"], program_id);
 
-    if state_account.key() != &expected_key {
+    if state_account.address() != &expected_key {
         return Err(ProgramError::InvalidArgument);
     }
 

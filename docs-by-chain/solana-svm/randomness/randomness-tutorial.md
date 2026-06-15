@@ -115,7 +115,7 @@ Why? If you take payment on reveal, a malicious user could:
 ```toml
 [dependencies]
 anchor-lang = "0.31.1"
-switchboard-on-demand = { version = "0.10.0", features = ["anchor"] }
+switchboard-on-demand = { version = "0.13.0", features = ["anchor"] }
 ```
 
 ### Program Structure

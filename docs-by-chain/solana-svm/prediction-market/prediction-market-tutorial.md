@@ -91,14 +91,14 @@ const quote = await queue.fetchQuoteIx(crossbar, [feed], {
 ```toml
 [dependencies]
 anchor-lang = "0.31.1"
-switchboard-on-demand = { version = "=0.10.3", features = ["anchor", "devnet"] }
-switchboard-protos = { version = "^0.2.1", features = ["serde"] }
+switchboard-on-demand = { version = "0.13.0", features = ["anchor", "devnet"] }
+switchboard-protos = { version = "0.2.6", features = ["serde"] }
 prost = "0.13"
 solana-program = ">=2,<3"
 faster-hex = "0.10.0"
 ```
 
-> **Note:** The current example program pins `switchboard-on-demand` to `=0.10.3` for the `anchor-lang 0.31.1` toolchain.
+> **Note:** The current example program uses `switchboard-on-demand 0.13.0` with the `anchor` and `devnet` features for the `anchor-lang 0.31.1` toolchain.
 
 ### Program Structure
 

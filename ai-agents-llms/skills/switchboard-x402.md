@@ -21,9 +21,9 @@ Use X402 micropayments with Switchboard feeds to access any X402-protected resou
 
 Use exact pins from the [SDK Version Matrix](../../tooling/sdk-version-matrix.md).
 
-- `@switchboard-xyz/on-demand@3.9.0`
-- `@switchboard-xyz/common@5.7.0`
-- `@solana/web3.js@1.98.4`
+- `@switchboard-xyz/on-demand@3.10.3`
+- `@switchboard-xyz/common@5.8.2`
+- `@solana/web3.js@1.98.0`
 
 ## Preconditions
 

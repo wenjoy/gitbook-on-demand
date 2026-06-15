@@ -1,28 +1,30 @@
 {
   "schema_version": 1,
-  "baseline_date": "2026-03-24",
+  "baseline_date": "2026-06-12",
   "policy": {
     "pinning": "exact",
     "scope": "current flows only (legacy excluded)",
-    "status_model": "single canonical verifier set + observed example pins"
+    "status_model": "canonical docs pin set + observed current-example pins"
   },
   "drift_exceptions": {
     "npm": {
-      "@mysten/sui": "Latest 2.x breaks current import surface used in docs/examples; upgrade after migration."
+      "@mysten/sui": "Latest 2.x breaks current import surface used in docs/examples; upgrade after migration.",
+      "@switchboard-xyz/aptos-sdk": "Current Aptos and Movement docs pin.",
+      "@aptos-labs/ts-sdk": "Current Aptos and Movement docs pin."
     }
   },
   "sdk_versions": {
     "npm": {
-      "@switchboard-xyz/on-demand": "3.9.0",
-      "@switchboard-xyz/common": "5.7.0",
+      "@switchboard-xyz/on-demand": "3.10.3",
+      "@switchboard-xyz/common": "5.8.2",
       "@switchboard-xyz/on-demand-solidity": "1.1.0",
-      "@switchboard-xyz/sui-sdk": "0.1.14",
+      "@switchboard-xyz/sui-sdk": "0.1.16",
       "@switchboard-xyz/aptos-sdk": "0.1.5",
       "@switchboard-xyz/iota-sdk": "0.0.3"
     },
     "crates": {
-      "switchboard-on-demand": "0.11.3",
-      "switchboard-protos": "0.2.4"
+      "switchboard-on-demand": "0.13.0",
+      "switchboard-protos": "0.2.6"
     }
   },
   "companion_versions": {
@@ -33,13 +35,16 @@
       "@iota/iota-sdk": "1.11.0",
       "ethers": "6.13.1",
       "@coral-xyz/anchor": "0.31.1"
+    },
+    "crates": {
+      "pinocchio": "0.11.2"
     }
   },
   "observed_example_versions": {
     "npm": {
       "@switchboard-xyz/on-demand": [
         {
-          "version": "^3.9.0",
+          "version": "^3.10.3",
           "references": [
             "common",
             "solana/feeds/basic",
@@ -55,10 +60,11 @@
       ],
       "@switchboard-xyz/common": [
         {
-          "version": "^5.7.0",
+          "version": "^5.8.2",
           "references": [
             "common",
             "common/twitter-follower-count",
+            "common/variable-overrides",
             "evm/price-feeds",
             "evm/randomness",
             "evm/randomness/coin-flip",
@@ -74,14 +80,9 @@
       ],
       "@switchboard-xyz/on-demand-solidity": [
         {
-          "version": "^0.0.4",
-          "references": [
-            "evm/price-feeds"
-          ]
-        },
-        {
           "version": "^1.1.0",
           "references": [
+            "evm/price-feeds",
             "evm/randomness/coin-flip",
             "evm/randomness/pancake-stacker"
           ]
@@ -89,10 +90,18 @@
       ],
       "@switchboard-xyz/sui-sdk": [
         {
-          "version": "^0.1.14",
+          "version": "^0.1.16",
           "references": [
             "sui/feeds/basic",
             "sui/surge/basic"
+          ]
+        }
+      ],
+      "@switchboard-xyz/iota-sdk": [
+        {
+          "version": "^0.0.3",
+          "references": [
+            "docs only; examples PR #60 did not include an Iota current example"
           ]
         }
       ],
@@ -167,31 +176,29 @@
     "crates": {
       "switchboard-on-demand": [
         {
-          "version": "0.11.3",
+          "version": "0.13.0",
           "references": [
-            "common/rust-feed-creation"
-          ]
-        },
-        {
-          "version": "=0.10.3",
-          "references": [
+            "common/rust-feed-creation",
             "solana/feeds/basic",
             "solana/feeds/advanced",
-            "solana/prediction-market"
-          ]
-        },
-        {
-          "version": "0.10.0",
-          "references": [
+            "solana/prediction-market",
             "solana/randomness/coin-flip"
           ]
         }
       ],
       "switchboard-protos": [
         {
-          "version": "^0.2.1",
+          "version": "0.2.6",
           "references": [
             "solana/prediction-market"
+          ]
+        }
+      ],
+      "pinocchio": [
+        {
+          "version": "0.11.2",
+          "references": [
+            "solana/feeds/advanced"
           ]
         }
       ]
@@ -205,11 +212,11 @@
     "solana_cli": "2.3.11",
     "foundry": "1.5.0",
     "aptos_cli": "8.1.0",
-    "sui_cli": "1.66.2"
+    "sui_cli": "1.73.1"
   },
   "verification": {
     "source_repo": "../sb-on-demand-examples",
-    "last_verified": "2026-03-24",
+    "last_verified": "2026-06-12",
     "commands": [
       {
         "id": "rust-common",
@@ -267,27 +274,16 @@
         "command": "pnpm install --frozen-lockfile || pnpm install && pnpm exec tsc --noEmit"
       },
       {
-        "id": "aptos-smoke",
-        "cwd": "/tmp/sb-sdk-smoke/aptos",
-        "command": "npm install && npx tsc --noEmit"
-      },
-      {
-        "id": "movement-smoke",
-        "cwd": "/tmp/sb-sdk-smoke/movement",
-        "command": "npm install && npx tsc --noEmit"
-      },
-      {
         "id": "iota-smoke",
         "cwd": "/tmp/sb-sdk-smoke/iota",
         "command": "npm install && npx tsc --noEmit"
       }
     ],
     "notes": [
-      "Current TypeScript example manifests are aligned on @switchboard-xyz/on-demand@^3.9.0 and @switchboard-xyz/common@^5.7.0; see observed_example_versions for the full per-package breakdown.",
+      "Current TypeScript example manifests are aligned on @switchboard-xyz/on-demand@^3.10.3 and @switchboard-xyz/common@^5.8.2; see observed_example_versions for the full per-package breakdown.",
       "@mysten/sui latest (2.x) is not yet compatible with current docs/examples imports; pinned to 1.38.0.",
-      "@switchboard-xyz/on-demand-solidity remains split across EVM flows: evm/price-feeds uses ^0.0.4 while the randomness examples use ^1.1.0.",
-      "solana/prediction-market build-sbf can fail on edition2024 transitive crates under current Solana toolchain cargo; verify with fallback host cargo check if encountered.",
-      "sui/feeds/basic contains an upstream failing Move unit test; treat build/typecheck as the dependency compatibility gate."
+      "Solana on-chain examples are aligned on switchboard-on-demand 0.13.0; the advanced Pinocchio example uses pinocchio 0.11.2 and AccountView.",
+      "sui/feeds/basic defaults its checked-in Move.toml to testnet. Use explicit build:testnet, build:mainnet, deploy:testnet, and deploy:mainnet scripts when documenting or verifying flows."
     ]
   }
 }

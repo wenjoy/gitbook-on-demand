@@ -56,7 +56,7 @@ solana-keygen new --outfile path/to/solana-keypair.json
 ## Install
 
 ```bash
-bun add @switchboard-xyz/on-demand @switchboard-xyz/common
+bun add @switchboard-xyz/on-demand@3.10.3 @switchboard-xyz/common@5.8.2
 ```
 
 ## Deployment flow (TypeScript)

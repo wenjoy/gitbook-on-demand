@@ -56,7 +56,7 @@ A feed is a set of jobs. Oracles execute the jobs and then aggregate the results
 mkdir example
 cd example
 bun init
-bun add @switchboard-xyz/on-demand @switchboard-xyz/common
+bun add @switchboard-xyz/on-demand@3.10.3 @switchboard-xyz/common@5.8.2
 ```
 
 > Note: Some examples import `OracleJob` from `@switchboard-xyz/common`.  

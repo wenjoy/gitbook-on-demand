@@ -20,11 +20,11 @@ Integrate Switchboard on-demand feeds into Solana/SVM transactions and programs:
 
 Use exact pins from the [SDK Version Matrix](../../tooling/sdk-version-matrix.md).
 
-- `@switchboard-xyz/on-demand@3.9.0`
-- `@switchboard-xyz/common@5.7.0`
-- `@solana/web3.js@1.98.4`
-- `@coral-xyz/anchor@0.32.1` (TypeScript client)
-- `switchboard-on-demand = "0.11.3"` (Rust on-chain)
+- `@switchboard-xyz/on-demand@3.10.3`
+- `@switchboard-xyz/common@5.8.2`
+- `@solana/web3.js@1.98.0`
+- `@coral-xyz/anchor@0.31.1` (TypeScript client)
+- `switchboard-on-demand = "0.13.0"` (Rust on-chain)
 
 This skill is about integration correctness, not designing new feed definitions (handled by `switchboard-feed-design`).
 
