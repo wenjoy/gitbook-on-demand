@@ -9,7 +9,8 @@
   "drift_exceptions": {
     "npm": {
       "@mysten/sui": "Latest 2.x breaks current import surface used in docs/examples; upgrade after migration.",
-      "@switchboard-xyz/aptos-sdk": "Current Aptos and Movement docs pin."
+      "@switchboard-xyz/aptos-sdk": "Current Aptos and Movement docs pin.",
+      "@aptos-labs/ts-sdk": "Current Aptos and Movement docs pin."
     }
   },
   "sdk_versions": {

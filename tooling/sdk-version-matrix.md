@@ -22,7 +22,7 @@ This page is the version reference for Switchboard docs, examples, and verifier 
 
 ## Canonical Docs Pin Set
 
-These are the current docs pins for examples-verified flows.
+These are the current docs pins. Example-backed pins match the observed versions above; docs-only pins are listed as the versions already used by their pages.
 
 | Package / Crate | Canonical Pin | Notes |
 | --- | --- | --- |
@@ -41,7 +41,7 @@ These are the current docs pins for examples-verified flows.
 | --- | --- | --- |
 | `@solana/web3.js` | `1.98.0` | Matches current Solana examples. |
 | `@mysten/sui` | `1.38.0` | Compatible with current Sui docs/examples import surface. |
-| `@aptos-labs/ts-sdk` | `6.1.0` | Aptos + Movement smoke projects. |
+| `@aptos-labs/ts-sdk` | `6.1.0` | Used by the Aptos and Movement docs. |
 | `@iota/iota-sdk` | `1.11.0` | Iota smoke projects. |
 | `ethers` | `6.13.1` | Matches the current EVM price-feeds example manifest. |
 | `@coral-xyz/anchor` | `0.31.1` | Matches the current Solana example manifests. |
